@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ScentApi2.Model;
 using ScentApi2.Model.SideModel;
@@ -7,14 +8,15 @@ namespace ScentApi2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class AuthenticationController : ControllerBase
     {
         DataContext Context;
-        public AccountController(DataContext context)
+        public AuthenticationController(DataContext context)
         {
             Context = context;
         }
         [HttpPost]
+        [Route("SignUp")]
         public IActionResult SignUp([FromBody]SignUpModel signUp)
         {
             var newAccount = new Account()
@@ -27,6 +29,16 @@ namespace ScentApi2.Controllers
             Context.Accounts.Add(newAccount);
             Context.SaveChanges();
             return Ok();
+        }
+        [HttpPost]
+        [Route("Login")]
+        public IActionResult Login([FromBody]LogInModel login){
+            var result= Context.Accounts.FirstOrDefault(p=>p.UserName == login.UserName && p.Password ==  Helper.Hash(login.Pass));
+            if (result != null)
+            {
+                return Ok();
+            }
+            return NotFound();
         }
 
     }

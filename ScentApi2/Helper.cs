@@ -10,5 +10,6 @@ namespace ScentApi2
             HashAlgorithm hashAlgorithm = HashAlgorithm.Create("SHA-512");
             return hashAlgorithm.ComputeHash(ASCIIEncoding.ASCII.GetBytes(plainText));
         }
+        
     }
 }

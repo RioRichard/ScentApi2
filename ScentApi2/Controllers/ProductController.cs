@@ -18,7 +18,7 @@ namespace ScentApi2.Controllers
             return Ok(Context.Products.OrderBy(p=>p.IdProduct).ToList());
         }
         [HttpGet]
-        [Route("{id}")]
+        [Route("[action]/{id}")]
         public IActionResult GetByCategory(int id)
         {
             var result = Context.Categories.Include(prop => prop.Products).FirstOrDefault(p => p.IdCategory == id);
@@ -26,6 +26,14 @@ namespace ScentApi2.Controllers
                 return Ok(result.Products);
             return NotFound();
 
+        }
+        [HttpGet, Route("{id}")]
+        public IActionResult GetById(int id)
+        {
+            var result = Context.Products.FirstOrDefault(p => p.IdProduct == id);
+            if (result != null)
+                return Ok(result);
+            return NotFound();
         }
     }
 }

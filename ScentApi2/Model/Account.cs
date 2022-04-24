@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json.Serialization;
 
 namespace ScentApi2.Model
 {
@@ -6,6 +7,7 @@ namespace ScentApi2.Model
     {
         public string IdAccount { get; set; }
         public string UserName { get; set; }
+        [JsonIgnore]
         public byte[] Password { get; set; }
         public string Email { get; set; }
         public DateTime? ExpiredTokenTime { get; set; }
