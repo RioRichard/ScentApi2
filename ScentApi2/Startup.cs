@@ -1,21 +1,14 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ScentApi2.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 
 namespace ScentApi2
 {
@@ -46,6 +39,16 @@ namespace ScentApi2
                     IssuerSigningKey = new SymmetricSecurityKey(key)
                 };
             });
+            //services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(buider =>
+            //    {
+            //        buider.WithOrigins("https://localhost:44380/", "http://localhost:53629/")
+            //        .AllowAnyHeader()
+            //        .AllowAnyMethod();
+            //    });
+            //});
+            services.AddCors();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -63,7 +66,11 @@ namespace ScentApi2
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ScentApi2 v1"));
             }
-
+            app.UseCors(
+                builder =>
+                {
+                    builder.AllowAnyOrigin();
+                });
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseAuthentication();
