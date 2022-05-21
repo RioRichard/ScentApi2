@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
+using ScentApi2.Model.SideModel;
 using System;
 using System.Linq;
 
@@ -62,7 +63,7 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPost("AddCate")]
-        public IActionResult AddCategory(string Name)
+        public IActionResult AddCategory([FromBody] string Name)
         {
             try
             {
@@ -81,14 +82,14 @@ namespace ScentApi2.Controllers
                 return BadRequest();
             }
         }
-        [HttpPut("UpdateCate")]
-        public IActionResult UpdateCate(int id, string Name, bool isDelete)
+        [HttpPut("UpdateCate/{id}")]
+        public IActionResult UpdateCate(int id, [FromBody] CategoryModel category)
         {
             try
             {
                 var cate = Context.Categories.FirstOrDefault(p => p.IdCategory == id);
-                cate.CategoryName = Name;
-                cate.IsDelete = isDelete;
+                cate.CategoryName = category.CategoryName;
+                cate.IsDelete = category.IsDelete;
                 Context.Categories.Update(cate);
                 Context.SaveChanges();
                 return Ok();
@@ -100,7 +101,7 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpDelete("DeleteCate")]
-        public IActionResult DeleteCate(int id)
+        public IActionResult DeleteCate([FromBody]int id)
         {
             try
             {

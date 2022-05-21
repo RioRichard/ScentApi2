@@ -37,7 +37,7 @@ namespace ScentApi2.Controllers
             return NotFound();
         }
         [HttpPost("AddProduct")]
-        public IActionResult AddProduct(ProductModel product)
+        public IActionResult AddProduct([FromBody] ProductModel product)
         {
             try
             {

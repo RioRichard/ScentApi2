@@ -75,7 +75,7 @@ namespace ScentApi2
             app.UseCors(
                 builder =>
                 {
-                    builder.AllowAnyOrigin();
+                    builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             app.UseStaticFiles();
             app.UseHttpsRedirection();

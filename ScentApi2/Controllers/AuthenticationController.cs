@@ -21,7 +21,7 @@ namespace ScentApi2.Controllers
 
         [HttpPost]
         [Route("SignUp")]
-        public IActionResult SignUp(SignUpModel signUp)
+        public IActionResult SignUp([FromBody] SignUpModel signUp)
         {
             try
             {
