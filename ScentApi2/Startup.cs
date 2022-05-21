@@ -40,10 +40,15 @@ namespace ScentApi2
                 var key = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
                 p.SaveToken = true;
                 p.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters{
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["JWT:Issuer"],
-                    ValidAudience = Configuration["JWT:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(key)
+
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ClockSkew = TimeSpan.Zero
+
+                    
                 };
             });
             services.AddControllers();
@@ -66,9 +71,10 @@ namespace ScentApi2
 
             app.UseStaticFiles();
             app.UseHttpsRedirection();
-            app.UseAuthentication();
             
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

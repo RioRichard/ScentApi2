@@ -1,44 +1,45 @@
 ﻿using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using ScentApi2.Model;
+using ScentApi2.Model.Repository;
 using ScentApi2.Model.SideModel;
 
 namespace ScentApi2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthenticationController : ControllerBase
+    public class AuthenticationController : BaseController
     {
-        DataContext Context;
-        public AuthenticationController(DataContext context)
+        protected AccountRepository AccountRepo;
+
+        public AuthenticationController(DataContext context, IConfiguration configuration) : base(context)
         {
-            Context = context;
+            AccountRepo = new AccountRepository(context, configuration);
         }
+
         [HttpPost]
         [Route("SignUp")]
-        public IActionResult SignUp([FromBody]SignUpModel signUp)
+        public IActionResult SignUp(SignUpModel signUp)
         {
-            var newAccount = new Account()
+            try
             {
-                IdAccount = "12323123213123",
-                Email = signUp.Email,
-                UserName = signUp.UserName,
-                Password = Helper.Hash(signUp.Pass)
-            };
-            Context.Accounts.Add(newAccount);
-            Context.SaveChanges();
-            return Ok();
+                AccountRepo.AddAccount(signUp.Email, signUp.UserName, signUp.Pass);
+                return Ok();
+
+            }
+            catch 
+            {
+
+                return BadRequest();
+            }
         }
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody]LogInModel login){
-            var result= Context.Accounts.FirstOrDefault(p=>p.UserName == login.UserName && p.Password ==  Helper.Hash(login.Pass));
-            if (result != null)
-            {
-                return Ok();
-            }
-            return NotFound();
+            var rs = AccountRepo.Validate(login.UserName, login.Pass);
+            return Ok(rs);
         }
 
     }

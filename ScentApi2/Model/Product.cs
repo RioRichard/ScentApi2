@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -18,7 +19,10 @@ namespace ScentApi2.Model
         public string Description { get; set; }
         public string ShortDescription { get; set; }
 
-        [JsonIgnore]
+        
         public Category Category { get; set; }
+        [JsonIgnore]
+
+        public List<ProductCart> ProductCarts { get; set; }
     }
 }

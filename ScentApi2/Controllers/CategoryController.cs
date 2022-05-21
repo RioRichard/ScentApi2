@@ -58,5 +58,43 @@ namespace ScentApi2.Controllers
 
             }
         }
+        [HttpPost("AddCate")]
+        public IActionResult AddCategory(string Name)
+        {
+            try
+            {
+                var cate = new Category()
+                {
+                    CategoryName = Name,
+                    IsDelete = false
+                };
+                Context.Categories.Add(cate);
+                Context.SaveChanges();
+                return Ok();
+            }
+            catch 
+            {
+
+                return BadRequest();
+            }
+        }
+        [HttpPut("UpdateCate")]
+        public IActionResult UpdateCate(int id, string Name, bool isDelete)
+        {
+            try
+            {
+                var cate = Context.Categories.FirstOrDefault(p => p.IdCategory == id);
+                cate.CategoryName = Name;
+                cate.IsDelete = isDelete;
+                Context.Categories.Update(cate);
+                Context.SaveChanges();
+                return Ok();
+            }
+            catch 
+            {
+
+                return BadRequest();
+            }
+        }
     }
 }
