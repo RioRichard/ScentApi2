@@ -29,13 +29,18 @@ namespace ScentApi2.Model
             modelBuilder.Entity<Category>()
                 .HasMany(c => c.Products)
                 .WithOne(c => c.Category)
-                .HasForeignKey(p => p.IdCategory);
+                .HasForeignKey(p => p.IdCategory)
+                .OnDelete(DeleteBehavior.Cascade);
+                
             modelBuilder.Entity<Cart>()
                 .HasMany(p => p.ProductCarts);
             modelBuilder.Entity<Cart>()
                 .Property(p => p.IDAccount);
             modelBuilder.Entity<Product>()
-                .HasMany(p => p.ProductCarts);
+                .HasMany(p => p.ProductCarts)
+                .WithOne(p=>p.Product)
+                .HasForeignKey(p=>p.IDProduct)
+                .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<ProductCart>()
                 .HasKey(p => new { p.IDProduct, p.IDCart });
             modelBuilder.Entity<AccountAddress>()

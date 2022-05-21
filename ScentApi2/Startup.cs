@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ScentApi2.Model;
+using System;
 using System.Text;
 
 namespace ScentApi2

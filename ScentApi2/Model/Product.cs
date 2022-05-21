@@ -22,7 +22,6 @@ namespace ScentApi2.Model
         
         public Category Category { get; set; }
         [JsonIgnore]
-
         public List<ProductCart> ProductCarts { get; set; }
     }
 }

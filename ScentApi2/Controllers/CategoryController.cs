@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
+using System;
 using System.Linq;
 
 namespace ScentApi2.Controllers
@@ -27,6 +29,7 @@ namespace ScentApi2.Controllers
         }
         [HttpGet]
         [Route("{id}")]
+        //[Authorize]
         public IActionResult GetCategory(int id)
         {
             try
@@ -95,6 +98,30 @@ namespace ScentApi2.Controllers
 
                 return BadRequest();
             }
+        }
+        [HttpDelete("DeleteCate")]
+        public IActionResult DeleteCate(int id)
+        {
+            try
+            {
+                var cate = Context.Categories.FirstOrDefault(p => p.IdCategory == id);
+
+                Context.Categories.Remove(cate);
+                Context.SaveChanges();
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest();
+
+            }
+
+        }
+        [HttpGet("TestAuthorize")]
+        [Authorize]
+        public IActionResult Test()
+        {
+            return Ok(GetCategory());
         }
     }
 }
