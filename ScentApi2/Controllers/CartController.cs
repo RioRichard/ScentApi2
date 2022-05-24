@@ -1,6 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ScentApi2.Model;
+using ScentApi2.Model.Repository;
+using ScentApi2.Model.SideModel;
 using System.Linq;
+using System.Security.Claims;
 
 namespace ScentApi2.Controllers
 {
@@ -8,21 +12,31 @@ namespace ScentApi2.Controllers
     [ApiController]
     public class CartController : BaseController
     {
+        CartRepo cartRepo;
         public CartController(DataContext context) : base(context)
         {
+            cartRepo = new CartRepo(context);
         }
 
         [HttpGet]
+        [Authorize]
         public IActionResult GetAllCart()
         {
-            return Ok(Context.Carts.ToList());
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+
+            return Ok(Context.Carts.Where(p=>p.IDAccount==userId).ToList());
         }
 
         
         [HttpPost]
-        public IActionResult AddToCart(string idAccount, int idProduct, int quantity)
+        [Authorize]
+        public IActionResult AddToCart([FromBody] AddCartModel product)
         {
-            return Ok(new {id1 = idAccount, id2 = idProduct, quantity1 = quantity});
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            cartRepo.AddToCart(product, userId);
+            return Ok();
         }
+
+        
     }
 }

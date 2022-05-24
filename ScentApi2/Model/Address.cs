@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ScentApi2.Model
 {
+    [Table("Address")]
     public class Address
     {
         [Key]
@@ -11,8 +13,8 @@ namespace ScentApi2.Model
         [Column("Address")]
         public string Addressed { get; set; }
         public string Phone { get; set; }
-        public string Receiver { get; set; }
+        public string Reciever { get; set; }
         [JsonIgnore]
-        public Account Account { get; set; }
+        public List<AccountAddress> AccountAddress { get; set; }
     }
 }

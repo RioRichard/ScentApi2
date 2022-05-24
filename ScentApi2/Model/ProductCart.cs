@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ScentApi2.Model
 {
+    [Table("ProductCart")]
     public class ProductCart
     {
         [Key]

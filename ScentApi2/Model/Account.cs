@@ -21,8 +21,9 @@ namespace ScentApi2.Model
         public string FullName { get; set; }
         public bool? Gender { get; set; }
         [JsonIgnore]
-        //public List<AccountAddress> AccountAddresses { get; set; }
+        public List<AccountAddress> AccountAddresses { get; set; }
 
+        [JsonIgnore]
         public List<Cart> Carts{ get; set; }
     }
 }

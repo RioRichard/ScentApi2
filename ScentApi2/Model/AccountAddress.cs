@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ScentApi2.Model
 {
+    [Table("AccountAddress")]
     public class AccountAddress
     {
         [Key]

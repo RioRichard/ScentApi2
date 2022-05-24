@@ -71,7 +71,7 @@ namespace ScentApi2.Model.Repository
                     new Claim(ClaimTypes.NameIdentifier, account.IdAccount),
 
                     //Roles
-                    new Claim(ClaimTypes.Role, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Role, "None"),
 
 
                 }
