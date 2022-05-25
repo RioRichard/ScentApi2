@@ -62,5 +62,10 @@ namespace ScentApi2.Controllers
                 return BadRequest();
             }
         }
+        [HttpGet("Search/{name}")]
+        public IActionResult Search(string name)
+        {
+            return Ok(Context.Products.Where(p=>p.Name.ToLower().Contains(name.ToLower())));
+        }
     }
 }

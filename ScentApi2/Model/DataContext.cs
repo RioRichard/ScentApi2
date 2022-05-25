@@ -18,7 +18,9 @@ namespace ScentApi2.Model
         public DbSet<AccountAddress> AccountAddresses { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
+        //public DbSet<Invoice> Invoices { get; set; }
 
+        //public DbSet<Status> Statuses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,7 +67,14 @@ namespace ScentApi2.Model
                 .HasForeignKey(p => p.IDAccount);
 
 
-            //modelBuilder.Entity<Cart>().ToTable("Cart").HasKey(p => p.IDCart);
+
+            //Status
+            //modelBuilder.Entity<Status>()
+            //    .HasMany(p => p.Invoices)
+            //    .WithOne(p => p.Status)
+            //    .HasForeignKey(p => p.Status);
+                
+
             
         }
     }
