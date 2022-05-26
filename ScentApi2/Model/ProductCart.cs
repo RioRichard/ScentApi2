@@ -7,11 +7,9 @@ namespace ScentApi2.Model
     [Table("ProductCart")]
     public class ProductCart
     {
-        [Key]
-        [Column(Order = 0)]
+
         public Guid IDCart { get; set; }
-        [Key]
-        [Column(Order = 1)]
+
         public int IDProduct { get; set; }
         public int Quantity { get; set; }
         public int PaymentPrice { get; set; }

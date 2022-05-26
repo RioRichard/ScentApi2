@@ -19,7 +19,7 @@ namespace ScentApi2.Model
         public string Description { get; set; }
         public string ShortDescription { get; set; }
 
-        
+        [JsonIgnore]
         public Category Category { get; set; }
         [JsonIgnore]
         public List<ProductCart> ProductCarts { get; set; }

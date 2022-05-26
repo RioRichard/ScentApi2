@@ -16,5 +16,7 @@ namespace ScentApi2.Model
         public string Reciever { get; set; }
         [JsonIgnore]
         public List<AccountAddress> AccountAddress { get; set; }
+
+        public List<Invoice> Invoices { get; set; }
     }
 }

@@ -15,6 +15,10 @@ namespace ScentApi2.Model
         public int IDAddress { get; set; }
         public int IDStatus { get; set; }
 
-        public Status Status { get; set; }
+        public Status Statused { get; set; }
+
+        public Cart Carts { get; set; }
+
+        public Address Address { get; set; }
     }
 }

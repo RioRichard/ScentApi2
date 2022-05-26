@@ -6,11 +6,9 @@ namespace ScentApi2.Model
     [Table("AccountAddress")]
     public class AccountAddress
     {
-        [Key]
-        [Column(Order = 0)]
+        
         public int IDAddress { get; set; }
-        [Key]
-        [Column(Order =1)]
+
         public string IDAccount { get; set; }
 
         public bool IsDefault { get; set; }

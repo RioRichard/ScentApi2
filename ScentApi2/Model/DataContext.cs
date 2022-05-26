@@ -18,17 +18,16 @@ namespace ScentApi2.Model
         public DbSet<AccountAddress> AccountAddresses { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
-        //public DbSet<Invoice> Invoices { get; set; }
+        public DbSet<Invoice> Invoices { get; set; }
 
-        //public DbSet<Status> Statuses { get; set; }
+        public DbSet<Status> Statuses { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             //Cart
-            modelBuilder.Entity<Cart>()
-                .Property(p => p.IDAccount);
+          
             modelBuilder.Entity<Cart>()
                 .HasMany(p => p.ProductCarts)
                 .WithOne(p => p.Cart)
@@ -68,14 +67,25 @@ namespace ScentApi2.Model
 
 
 
-            //Status
-            //modelBuilder.Entity<Status>()
-            //    .HasMany(p => p.Invoices)
-            //    .WithOne(p => p.Status)
-            //    .HasForeignKey(p => p.Status);
-                
+            //Status - Invoice
+            modelBuilder.Entity<Status>()
+                .HasMany(p => p.Invoices)
+                .WithOne(p => p.Statused)
+                .HasForeignKey(p => p.IDStatus);
 
-            
+            //Cart - Invoice
+            modelBuilder.Entity<Cart>()
+                .HasOne(p => p.Invoices)
+                .WithOne(p => p.Carts)
+                .HasForeignKey<Cart>(p => p.IDCart);
+            //Address - Invoice
+            modelBuilder.Entity<Address>()
+                .HasMany(p=>p.Invoices)
+                .WithOne(p=>p.Address)
+                .HasForeignKey(p=>p.IDAddress);
+
+
+
         }
     }
 }

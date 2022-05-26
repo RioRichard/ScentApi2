@@ -45,6 +45,7 @@ namespace ScentApi2
                     
                 };
             });
+            //services.AddControllersWithViews().AddJsonOptions(p => p.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
             //services.AddCors(options =>
             //{
             //    options.AddDefaultPolicy(buider =>
