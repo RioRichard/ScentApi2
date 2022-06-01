@@ -1,4 +1,6 @@
 ﻿using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -40,6 +42,14 @@ namespace ScentApi2.Controllers
         public IActionResult Login([FromBody]LogInModel login){
             var rs = AccountRepo.Validate(login.UserName, login.Pass);
             return Ok(rs);
+        }
+        [HttpGet("Info")]
+        [Authorize]
+        public IActionResult GetInfo()
+        {
+            var userId = User.Claims.FirstOrDefault(p=>p.Type == ClaimTypes.NameIdentifier).Value;
+            var acc = Context.Accounts.Where(p=>p.IdAccount == userId).Select(p=> new {email = p.Email, userName = p.UserName, gender = p.Gender, fullName = p.FullName, }).FirstOrDefault();
+            return Ok(acc);
         }
 
     }

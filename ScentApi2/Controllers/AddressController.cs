@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
 using ScentApi2.Model.SideModel;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace ScentApi2.Controllers
         public IActionResult GetAddress()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            var address = Context.Accounts.FirstOrDefault(p => p.IdAccount == userId).AccountAddresses?.Select(p => p.Address);
+            var address = Context.Accounts.Include(p=>p.AccountAddresses).ThenInclude(p=>p.Address).FirstOrDefault(p => p.IdAccount == userId).AccountAddresses?.Select(p => new { p.IsDefault,p.Address});
             return Ok(address);
         }
         [HttpPost]

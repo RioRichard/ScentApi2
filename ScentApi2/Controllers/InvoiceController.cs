@@ -66,5 +66,29 @@ namespace ScentApi2.Controllers
             //Console.WriteLine(Account.Carts.FirstOrDefault(p=>p.IsExpired==false).IDCart);
             return Ok(Account.Carts.FirstOrDefault(p => p.IsExpired == false).ProductCarts.Count);
         }
+        [HttpGet]
+        [Authorize]
+        public IActionResult GetAllInvoice()
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+
+            var AllInvoice = Context.Carts.Include(p=>p.Invoices).Include(p => p.ProductCarts).ThenInclude(p => p.Product).
+                Where(p => p.IDAccount == userId && p.IsExpired == true).Select(p => new { invoice = p.Invoices, product = p.ProductCarts.Select(p=>p.Product)});
+
+
+            //Console.WriteLine(Account.Carts.FirstOrDefault(p=>p.IsExpired==false).IDCart);
+            return Ok(AllInvoice);
+        }
+        [HttpGet]
+        public IActionResult GetAdminInvoice()
+        {
+            var Invoice = Context.Invoices
+                .Include(p => p.Carts).ThenInclude(p => p.ProductCarts).ThenInclude(p => p.Product)
+                .Include(p => p.Address)
+                .Include(p => p.Statused)
+                .Select(p => new { id = p.IDInvoice, Product = p.Carts.ProductCarts.Select(p => p.Product), p.Address, p.Statused });
+            return Ok(Invoice);
+        }
+
     }
 }

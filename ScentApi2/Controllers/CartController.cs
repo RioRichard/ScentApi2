@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
 using ScentApi2.Model.Repository;
 using ScentApi2.Model.SideModel;
@@ -20,11 +21,12 @@ namespace ScentApi2.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult GetAllCart()
+        public IActionResult GetCart()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-
-            return Ok(Context.Carts.Where(p=>p.IDAccount==userId).ToList());
+            var rs = Context.Carts.Include(p => p.ProductCarts).ThenInclude(p => p.Product).Where(p => p.IDAccount == userId && p.IsExpired == false)
+                .Select(p =>new {Product = p.ProductCarts.Select(p => p.Product)}).FirstOrDefault();
+            return Ok(rs);
         }
 
         

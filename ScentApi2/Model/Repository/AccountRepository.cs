@@ -35,10 +35,20 @@ namespace ScentApi2.Model.Repository
             
             if (result != null)
             {
+                
                 var hasedPass = Helper.Hash(pass + result.IdAccount);
                
                 if (hasedPass.SequenceEqual(result.Password))
                 {
+                    if(result.IsConfirmed == false)
+                    {
+                        return new
+                        {
+                            Success = false,
+                            Msg = "Tài khoản của bạn chưa được xác nhận. Một email mới đã được gửi tới yêu cầu xác nhận và có hiệu lực trong 15p",
+                            Data = ""
+                        };
+                    }
                     return new
                     {
                         Success = true,
