@@ -74,10 +74,10 @@ namespace ScentApi2.Model
                 .HasForeignKey(p => p.IDStatus);
 
             //Cart - Invoice
-            modelBuilder.Entity<Cart>()
-                .HasOne(p => p.Invoices)
-                .WithOne(p => p.Carts)
-                .HasForeignKey<Cart>(p => p.IDCart);
+            modelBuilder.Entity<Invoice>()
+                .HasOne(p => p.Carts)
+                .WithOne(p => p.Invoices)
+                .HasForeignKey<Invoice>(p => p.IDCart);
             //Address - Invoice
             modelBuilder.Entity<Address>()
                 .HasMany(p=>p.Invoices)
