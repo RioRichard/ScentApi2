@@ -25,7 +25,7 @@ namespace ScentApi2.Controllers
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
             var rs = Context.Carts.Include(p => p.ProductCarts).ThenInclude(p => p.Product).Where(p => p.IDAccount == userId && p.IsExpired == false)
-                .Select(p =>new {Product = p.ProductCarts.Select(p => p.Product)}).FirstOrDefault();
+                .Select(p =>new {Product = p.ProductCarts.Select(x => new { x.Product,x.Quantity }), }).FirstOrDefault();
             return Ok(rs);
         }
 
