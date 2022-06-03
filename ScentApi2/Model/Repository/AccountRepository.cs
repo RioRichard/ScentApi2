@@ -32,6 +32,7 @@ namespace ScentApi2.Model.Repository
                     UserName = userName,
                     Password = Helper.Hash(pass + id),
                     Token = Helper.RandomNumber(7),
+                    IsConfirmed = false,
                     ExpiredTokenTime = DateTime.UtcNow.AddMinutes(15)
                 };
                 Context.Accounts.Add(newAccount);
@@ -72,14 +73,18 @@ namespace ScentApi2.Model.Repository
                         {
                             Success = false,
                             Msg = "Tài khoản của bạn chưa được xác nhận. Một email mới đã được gửi tới yêu cầu xác nhận và có hiệu lực trong 15p",
-                            Data = ""
+                            Data = "",
+                            IsConfirm = false
+                            
                         };
                     }
                     return new
                     {
                         Success = true,
                         Msg = "Đăng nhập thành công",
-                        Data = generateJWTToken(result)
+                        Data = generateJWTToken(result),
+                        IsConfirm = result.IsConfirmed
+
                     };
                 }
                     
@@ -88,7 +93,9 @@ namespace ScentApi2.Model.Repository
             {
                 Success = false,
                 Msg = "Tên đăng nhập hoặc mật khẩu không đúng",
-                Data = ""
+                Data = "",
+                IsConfirm = false
+
 
             };
         }
@@ -124,6 +131,73 @@ namespace ScentApi2.Model.Repository
             var json = File.ReadAllText("test.json");
             var dict = JsonSerializer.Deserialize<Dictionary<string,string>>(json);
             return dict;
+        }
+        public object tryConfirm(string userId, string token)
+        {
+            var acc = Context.Accounts.FirstOrDefault(p => p.IdAccount == userId);
+            if(userId != null)
+            {
+                if (acc.Token == token && DateTime.Compare(DateTime.UtcNow, (DateTime)acc.ExpiredTokenTime) <= 0)
+                {
+                    acc.ExpiredTokenTime = null;
+                    acc.Token = "";
+                    acc.IsConfirmed = true;
+                    Context.Accounts.Update(acc);
+                    Context.SaveChanges();
+                    return new
+                    {
+                        status = true,
+                        msg = "Xác nhận thành công"
+                    };
+                }
+
+            }
+            return new
+            {
+                status = false,
+                msg = "Xác nhận không thành công. Token sai hoặc quá hạn."
+            };
+        }
+        public object sendToken(string userId)
+        {
+            var acc = Context.Accounts.FirstOrDefault(p => p.IdAccount == userId);
+            if (userId != null)
+            {
+                var expiredTime = (DateTime)acc.ExpiredTokenTime;
+                if (DateTime.Compare(DateTime.UtcNow, expiredTime.AddMinutes(-14)) >= 0)
+                {
+                    acc.ExpiredTokenTime = DateTime.UtcNow.AddMinutes(15);
+                    acc.Token = Helper.RandomNumber(7);
+                    Context.Accounts.Update(acc);
+                    Context.SaveChanges();
+                    var content = $"Mã xác nhận tài khoản của bạn là: {acc.Token} có thời gian hiệu lực trong 15p.";
+                    var subject = $"Xác nhận tài khoản Teyvat Scent";
+                    try
+                    {
+                        Helper.SendMail(acc.Email, content, subject);
+                    }
+                    catch (Exception e)
+                    {
+
+                        return new
+                        {
+                            status = false,
+                            msg = $"Gửi email xác nhận không thành công. {e}"
+                        };
+                    }
+                    return new
+                    {
+                        status = true,
+                        msg = "Email xác nhận đã gửi lại cho bạn"
+                    };
+                }
+
+            }
+            return new
+            {
+                status = false,
+                msg = "Gửi email xác nhận không thành công."
+            };
         }
 
 

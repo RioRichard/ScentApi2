@@ -62,6 +62,36 @@ namespace ScentApi2.Controllers
             var x = dict.GetValueOrDefault("pass");
             return Ok(x);
         }
+        [HttpPost("Confirm")]
+        [Authorize]
+        public IActionResult Confirm([FromBody] string token)
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                return Ok(AccountRepo.tryConfirm(userId, token));
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+        [HttpPost("SendMail")]
+        [Authorize]
+        public IActionResult SendMail()
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                return Ok(AccountRepo.sendToken(userId));
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
 
     }
 }
