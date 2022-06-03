@@ -15,6 +15,8 @@ namespace ScentApi2.Model
         [JsonIgnore]
         public byte[] Password { get; set; }
         public string Email { get; set; }
+
+        public string Token { get; set; }
         public DateTime? ExpiredTokenTime { get; set; }
         public bool? IsConfirmed { get; set; }
         public bool? IsDelete { get; set; }

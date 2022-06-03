@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 
 namespace ScentApi2.Model.Repository
 {
@@ -15,19 +18,42 @@ namespace ScentApi2.Model.Repository
         {
             Configuration = configuration;
         }
-        public void AddAccount(string email, string userName, string pass)
+        public object AddAccount(string email, string userName, string pass)
             
         {
-            var id = Helper.RandomString(64);
-            var newAccount = new Account()
+            var check = Context.Accounts.FirstOrDefault(p => p.Email == email || p.UserName == userName);
+            if(check == null)
             {
-                IdAccount = id,
-                Email = email,
-                UserName = userName,
-                Password = Helper.Hash(pass+id)
+                var id = Helper.RandomString(64);
+                var newAccount = new Account()
+                {
+                    IdAccount = id,
+                    Email = email,
+                    UserName = userName,
+                    Password = Helper.Hash(pass + id),
+                    Token = Helper.RandomNumber(7),
+                    ExpiredTokenTime = DateTime.UtcNow.AddMinutes(15)
+                };
+                Context.Accounts.Add(newAccount);
+                Context.SaveChanges();
+                var content = $"Mã xác nhận tài khoản của bạn là: {newAccount.Token} có thời gian hiệu lực trong 15p.";
+                var subject = $"Xác nhận tài khoản Teyvat Scent";
+                Helper.SendMail(email, content, subject);
+                return new
+                {
+                    Status = true,
+                    msg = "Đăng kí thành công. Mã xác nhận đã gửi tới email bạn"
+                };
+            }
+            return new
+            {
+                Status = false,
+                msg = "Đăng kí không thành công. Trùng tên đăng nhập hoặc mật khẩu."
             };
-            Context.Accounts.Add(newAccount);
-            Context.SaveChanges();
+
+
+
+
         }
         public object Validate(string userName, string pass)
         {
@@ -92,6 +118,12 @@ namespace ScentApi2.Model.Repository
             };
             var token = jwtHandler.CreateToken(tokenDescription);
             return jwtHandler.WriteToken(token);
+        }
+        public Dictionary<string,string> Test()
+        {
+            var json = File.ReadAllText("test.json");
+            var dict = JsonSerializer.Deserialize<Dictionary<string,string>>(json);
+            return dict;
         }
 
 

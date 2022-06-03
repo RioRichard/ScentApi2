@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -27,15 +29,17 @@ namespace ScentApi2.Controllers
         {
             try
             {
-                AccountRepo.AddAccount(signUp.Email, signUp.UserName, signUp.Pass);
-                return Ok();
+                var rs = AccountRepo.AddAccount(signUp.Email, signUp.UserName, signUp.Pass);
+                
+                return Ok(rs);
 
             }
-            catch 
+            catch (Exception ex)
             {
 
-                return BadRequest();
+                return BadRequest(ex);
             }
+            
         }
         [HttpPost]
         [Route("Login")]
@@ -50,6 +54,13 @@ namespace ScentApi2.Controllers
             var userId = User.Claims.FirstOrDefault(p=>p.Type == ClaimTypes.NameIdentifier).Value;
             var acc = Context.Accounts.Where(p=>p.IdAccount == userId).Select(p=> new {email = p.Email, userName = p.UserName, gender = p.Gender, fullName = p.FullName, }).FirstOrDefault();
             return Ok(acc);
+        }
+        [HttpGet("test")]
+        public IActionResult Test()
+        {
+            var dict = AccountRepo.Test();
+            var x = dict.GetValueOrDefault("pass");
+            return Ok(x);
         }
 
     }
