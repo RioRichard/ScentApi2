@@ -92,6 +92,26 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPut("UpdateInfo")]
+        [Authorize]
+        public IActionResult UpdateInfo([FromBody] InfoModel info)
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                var acc = Context.Accounts.FirstOrDefault(p => p.IdAccount == userId);
+                acc.FullName = info.Fullname;
+                acc.Gender = info.Gender;
+                Context.Accounts.Update(acc);
+                Context.SaveChanges();
+                return Ok("Sửa thông tin thành công.");
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
 
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using ScentApi2.Model;
 using System;
 using System.Text;
+
 
 namespace ScentApi2
 {
@@ -45,6 +47,13 @@ namespace ScentApi2
                     
                 };
             });
+            services.Configure<FormOptions>(p =>
+            {
+                p.ValueLengthLimit = int.MaxValue;
+                p.MultipartBodyLengthLimit = int.MaxValue;
+                p.MemoryBufferThreshold = int.MaxValue;
+            });
+            
             //services.AddControllersWithViews().AddJsonOptions(p => p.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve);
             //services.AddCors(options =>
             //{
@@ -57,6 +66,9 @@ namespace ScentApi2
             //});
             services.AddCors();
             services.AddControllers();
+           
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScentApi2", Version = "v1" });

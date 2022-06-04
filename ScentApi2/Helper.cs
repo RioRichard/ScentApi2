@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -69,6 +70,24 @@ namespace ScentApi2
             message.Body = content;
             message.Subject = subject;
             client.Send(message);
+        }
+        public static string FileUpload(IFormFile f, string savePath)
+        {
+            if (f != null && !string.IsNullOrEmpty(f.FileName))
+            {
+                
+                
+                var fileName = Helper.RandomString(32);
+                var imageUrl = fileName + Path.GetExtension(f.FileName);
+
+                string path = Path.Combine(savePath, imageUrl);
+                using (var stream = new FileStream(path, FileMode.Create))
+                {
+                    f.CopyToAsync(stream);
+                }
+                return imageUrl;
+            }
+            else return null;
         }
 
     }
