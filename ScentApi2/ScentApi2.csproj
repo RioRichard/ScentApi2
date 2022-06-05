@@ -54,4 +54,8 @@
     <None Include="wwwroot\Image\z3350175971036_4b73d7620b73be47a5255dc47ed4cee1-min.jpg" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\ImageTemp\" />
+  </ItemGroup>
+
 </Project>

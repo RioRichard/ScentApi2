@@ -71,7 +71,7 @@ namespace ScentApi2
             message.Subject = subject;
             client.Send(message);
         }
-        public static string FileUpload(IFormFile f, string savePath)
+        public static  string FileUpload(IFormFile f, string savePath)
         {
             if (f != null && !string.IsNullOrEmpty(f.FileName))
             {
@@ -81,14 +81,15 @@ namespace ScentApi2
                 var imageUrl = fileName + Path.GetExtension(f.FileName);
 
                 string path = Path.Combine(savePath, imageUrl);
-                using (var stream = new FileStream(path, FileMode.Create))
+                using (var stream = File.Create(path))
                 {
-                    f.CopyToAsync(stream);
+                    f.CopyTo(stream);
                 }
                 return imageUrl;
             }
             else return null;
         }
+        
 
     }
 }

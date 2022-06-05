@@ -9,7 +9,7 @@ namespace ScentApi2.Model.SideModel
         public string Name { get; set; }
         public int? Price { get; set; }
         public int? Stock { get; set; }
-        public IFormFile Image { get; set; }
+
         public string ImageUrl { get; set; }
         public bool? IsDelete { get; set; }
         public string Description { get; set; }
