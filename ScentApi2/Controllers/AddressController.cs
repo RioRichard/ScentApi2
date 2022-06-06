@@ -67,5 +67,23 @@ namespace ScentApi2.Controllers
             Context.SaveChanges();
             return Ok();
         }
+        [HttpPut("{id}")]
+        [Authorize]
+        public IActionResult ChangeDFAddress(int id)
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+
+            var listAccountAddress = Context.AccountAddresses.Where(p => p.IDAccount == userId);
+            var addressUpdate = listAccountAddress.FirstOrDefault(p => p.IDAddress == id);
+            addressUpdate.IsDefault = true;
+            var oldDfAddress = listAccountAddress.FirstOrDefault(p => p.IsDefault == true);
+            oldDfAddress.IsDefault = false;
+            Context.AccountAddresses.Update(addressUpdate);
+            Context.AccountAddresses.Update(oldDfAddress);
+            Context.SaveChanges();
+            return Ok();
+
+
+        }
     }
 }

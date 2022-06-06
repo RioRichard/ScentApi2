@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
+using ScentApi2.Model.SideModel;
 using System;
 using System.Linq;
 using System.Security.Claims;
@@ -93,6 +94,35 @@ namespace ScentApi2.Controllers
                 .Select(p => new { id = p.IDInvoice, Product = p.Carts.ProductCarts.Select(x => new { x.Product, x.Quantity}), p.Address, p.Statused });
             return Ok(Invoice);
         }
+        [HttpPost]
+        public IActionResult GetInvoiceStartMonth([FromBody] DateTime? input)
+        {
+            var invoice = Context.Invoices
+                .Include(p => p.Carts).ThenInclude(p => p.Account)
+                .Include(p => p.Carts).ThenInclude(p => p.ProductCarts).ThenInclude(p => p.Product)
+
+                .Where(p => p.DateCreated.Value.Month == input.Value.Month && p.DateCreated.Value.Year == input.Value.Year)
+                .Select(p => new { p.Carts.Account, productCart = p.Carts.ProductCarts.Select(x => new { x.Quantity, x.Product }) });
+            return Ok(invoice);
+        }
+
+        [HttpPost]
+        public IActionResult GetInvoiceExpiredMonth([FromBody] DateTime? input)
+        {
+            var invoice = Context.Invoices.Where(p => p.DateExpired.Value.Month == input.Value.Month && p.DateExpired.Value.Year == input.Value.Year);
+            return Ok(invoice);
+        }
+        //[NonAction]
+        //public int CompareMonth(DateTime? day1, DateTime? day2)
+        //{
+        //    day1 = day1 ?? DateTime.MaxValue;
+        //    day2 = day2 ?? DateTime.MaxValue;
+        //    day1 = (DateTime)day1;
+        //    day2 = (DateTime)day2;
+        //    return DateTime.Compare(day1.Value.Month)
+
+
+        //}
 
     }
 }
