@@ -59,6 +59,7 @@ namespace ScentApi2.Controllers
                     Description = product.Description,
                     IsDelete = product.IsDelete,
                     ImageUrl = product.ImageUrl,
+                    Stock = product.Stock,
                     ShortDescription = product.ShortDescription,
 
                 };
@@ -121,6 +122,8 @@ namespace ScentApi2.Controllers
                 product.Description = productModel.Description;
                 product.IsDelete = productModel.IsDelete;
                 product.ImageUrl = productModel.ImageUrl;
+                product.Stock = productModel.Stock;
+
                 product.ShortDescription = productModel.ShortDescription;
                 
                 Context.Products.Update(product);
