@@ -96,5 +96,44 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPut("Update/{id}")]
+        public IActionResult Update(int id, [FromBody] ProductModel productModel)
+        {
+
+            try
+            {
+                var product = Context.Products.FirstOrDefault(p => p.IdProduct == id);
+                if(product.ImageUrl != productModel.ImageUrl)
+                {
+                    var srcpath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ImageTemp", productModel.ImageUrl);
+                    var despath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", productModel.ImageUrl);
+                    //System.IO.File.Move(despath, srcpath);
+                    System.IO.File.Copy(srcpath, despath);
+                    System.IO.File.Delete(srcpath);
+                    var oldDesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", product.ImageUrl);
+                    System.IO.File.Delete(oldDesPath);
+
+
+                }
+                product.IdCategory = productModel.IdCategory;
+                product.Name = productModel.Name;
+                product.Price = productModel.Price;
+                product.Description = productModel.Description;
+                product.IsDelete = productModel.IsDelete;
+                product.ImageUrl = productModel.ImageUrl;
+                product.ShortDescription = productModel.ShortDescription;
+                
+                Context.Products.Update(product);
+                Context.SaveChanges();
+
+                return Ok();
+                //return Ok(imageUrl);
+            }
+            catch (System.Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
     }
 }
