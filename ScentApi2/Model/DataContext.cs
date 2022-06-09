@@ -10,7 +10,7 @@ namespace ScentApi2.Model
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         
-        //public DbSet<AccountStaff> AccountStaffs { get; set; }
+       
 
         public DbSet<Cart> Carts { get; set; }
         public DbSet<ProductCart> ProductCarts { get; set; }
@@ -21,6 +21,10 @@ namespace ScentApi2.Model
         public DbSet<Invoice> Invoices { get; set; }
 
         public DbSet<Status> Statuses { get; set; }
+
+        public DbSet<AccountStaff> AccountStaffs { get; set; }
+        public DbSet<StaffRole> StaffRoles { get; set; }
+        public DbSet<Role> Roles{ get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -84,8 +88,20 @@ namespace ScentApi2.Model
                 .WithOne(p=>p.Address)
                 .HasForeignKey(p=>p.IDAddress);
 
-
+            //Role - StaffRole - Staff
+            modelBuilder.Entity<StaffRole>()
+                .HasKey(p => new { p.IdRole, p.IDStaff });
+            modelBuilder.Entity<AccountStaff>()
+                .HasMany(p => p.StaffRoles)
+                .WithOne(p => p.accountStaff)
+                .HasForeignKey(p => p.IDStaff);
+            modelBuilder.Entity<Role>()
+                .HasMany(p => p.staffRoles)
+                .WithOne(p => p.role)
+                .HasForeignKey(p => p.IdRole);
 
         }
+
+
     }
 }

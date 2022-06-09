@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -200,6 +201,84 @@ namespace ScentApi2.Model.Repository
             };
         }
 
+
+        public string generateJWTToken(AccountStaff account)
+        {
+            var jwtHandler = new JwtSecurityTokenHandler();
+            var secretKeyBytes = Encoding.UTF8.GetBytes(Configuration["JWT:Key"]);
+            var roles = Context.StaffRoles.Include(p => p.role).Where(p => p.IDStaff == account.IDStaff && p.IsDelete == false);
+            var listRole = new List<Claim>();
+            foreach (var item in roles)
+            {
+                var role = new Claim(ClaimTypes.Role, item.role.RoleName);
+                listRole.Add(role);
+
+            }
+            var Subject = new ClaimsIdentity(new[]
+                    {
+                    new Claim(ClaimTypes.Email, account.Email),
+                    new Claim(ClaimTypes.Name, account.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, account.IDStaff),
+                });
+            Subject.AddClaims(listRole);
+
+            var tokenDescription = new SecurityTokenDescriptor
+            {
+                Subject = Subject
+                ,
+                
+                Expires = DateTime.UtcNow.AddDays(30),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(secretKeyBytes), SecurityAlgorithms.HmacSha256Signature),
+
+            };
+            var token = jwtHandler.CreateToken(tokenDescription);
+            return jwtHandler.WriteToken(token);
+        }
+
+        public object ValidateAdmin(string userName, string pass)
+        {
+            var result = Context.AccountStaffs
+                .FirstOrDefault(p => p.UserName == userName);
+
+            if (result != null)
+            {
+
+                var hasedPass = Helper.Hash(pass + result.IDStaff);
+
+                if (hasedPass.SequenceEqual(result.Password))
+                {
+                    if (result.IsConfirmed == false)
+                    {
+                        return new
+                        {
+                            Success = false,
+                            Msg = "Tài khoản của bạn chưa được xác nhận. Một email mới đã được gửi tới yêu cầu xác nhận và có hiệu lực trong 15p",
+                            Data = "",
+                            IsConfirm = false
+
+                        };
+                    }
+                    return new
+                    {
+                        Success = true,
+                        Msg = "Đăng nhập thành công",
+                        Data = generateJWTToken(result),
+                        IsConfirm = result.IsConfirmed
+
+                    };
+                }
+
+            }
+            return new
+            {
+                Success = false,
+                Msg = "Tên đăng nhập hoặc mật khẩu không đúng",
+                Data = "",
+                IsConfirm = false
+
+
+            };
+        }
 
     }
 }

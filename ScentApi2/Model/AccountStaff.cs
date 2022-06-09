@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace ScentApi2.Model
 {
+    [Table("AccountStaff")]
     public class AccountStaff
     {
-        public string IdAccount { get; set; }
+        [Key]
+        public string IDStaff { get; set; }
         public string UserName { get; set; }
         [JsonIgnore]
         public byte[] Password { get; set; }
@@ -15,5 +20,8 @@ namespace ScentApi2.Model
         public bool? IsDelete { get; set; }
         public string FullName { get; set; }
         public bool? Gender { get; set; }
+
+        public List<StaffRole> StaffRoles { get; set; }
+
     }
 }

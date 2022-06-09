@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using ScentApi2.Model;
 using ScentApi2.Model.Repository;
@@ -58,8 +59,9 @@ namespace ScentApi2.Controllers
         [HttpGet("test")]
         public IActionResult Test()
         {
-            var dict = AccountRepo.Test();
-            var x = dict.GetValueOrDefault("pass");
+
+            var x = Context.StaffRoles.Include(p => p.role);
+
             return Ok(x);
         }
         [HttpPost("Confirm")]
@@ -112,6 +114,45 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPost("AdminLogin")]
+        public IActionResult AdminLogin([FromBody] LogInModel logIn)
+        {
+            try
+            {
+                var rs = AccountRepo.ValidateAdmin(logIn.UserName, logIn.Pass);
+                return Ok(rs);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+        }
+        [HttpPost("AdminReg")]
+        public IActionResult AdminReg([FromBody] SignUpModel signUp)
+        {
+            try
+            {
+                var id = Helper.RandomString(64);
+                var acc = new AccountStaff()
+                {
+                    IDStaff = id,
+                    UserName = signUp.UserName,
+                    Password = Helper.Hash(signUp.Pass + id),
+                    Email = signUp.Email
+                };
+                Context.AccountStaffs.Add(acc);
+                Context.SaveChanges();
+                //var acc = Context.AccountStaffs;
+                return Ok(acc);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+        }
+        
 
     }
 }
