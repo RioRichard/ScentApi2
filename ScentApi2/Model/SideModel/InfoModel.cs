@@ -4,5 +4,6 @@
     {
         public string Fullname { get; set; }
         public bool Gender { get; set; }
+        public bool IsDelete { get; set; }
     }
 }

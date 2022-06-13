@@ -170,17 +170,46 @@ namespace ScentApi2.Controllers
                 .Select(p => new { info = new { p.IDStaff,p.Email, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c => c.IsDelete == false).Select(p => p.role) }).FirstOrDefault();
             return Ok(rs);
         }
-        [HttpPut("ChangeInfo")]
+        [HttpPut("ChangeAdminInfo")]
         [Authorize]
-        public IActionResult ChangeInfo()
+        public IActionResult ChangeInfo([FromBody] InfoModel info)
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                var acc = Context.AccountStaffs.FirstOrDefault(p => p.IDStaff == userId);
+                acc.FullName = info.Fullname;
+                acc.Gender = info.Gender;
+                Context.AccountStaffs.Update(acc);
+                Context.SaveChanges();
+                return Ok("Sửa thông tin thành công.");
+            }
+            catch (Exception e)
+            {
 
-            var rs = Context.AccountStaffs.Include(p => p.StaffRoles).ThenInclude(p => p.role).Where(p => p.IDStaff == userId)
-                .Select(p => new { info = new { p.IDStaff, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c => c.IsDelete == false).Select(p => p.role) }).FirstOrDefault();
-            return Ok(rs);
+                return BadRequest(e);
+            }
         }
+        [HttpPut("ChangeMemberInfo/{id}")]
+        public IActionResult ChangeMemberInfo(string id,[FromBody] InfoModel info)
+        {
+            
+            try
+            {
+                var acc = Context.AccountStaffs.FirstOrDefault(p => p.IDStaff == id);
+                acc.FullName = info.Fullname;
+                acc.Gender = info.Gender;
+                acc.IsDelete = info.IsDelete;
+                Context.AccountStaffs.Update(acc);
+                Context.SaveChanges();
+                return Ok("Sửa thông tin thành công.");
+            }
+            catch (Exception e)
+            {
 
+                return BadRequest(e);
+            }
+        }
 
     }
 }
