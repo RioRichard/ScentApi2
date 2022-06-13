@@ -156,13 +156,23 @@ namespace ScentApi2.Controllers
         public IActionResult AllStaffInfo()
         {
             var rs = Context.AccountStaffs.Include(p => p.StaffRoles).ThenInclude(p => p.role)
-                .Select(p => new { info = new { p.IDStaff, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c=>c.IsDelete == false).Select(p => p.role) });
+                .Select(p => new { info = new { p.IDStaff, p.Email, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c=>c.IsDelete == false).Select(p => p.role) });
             return Ok(rs);
         }
 
         [HttpGet("GetAdminInfo")]
         [Authorize]
         public IActionResult GetAdminInfo()
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+
+            var rs = Context.AccountStaffs.Include(p => p.StaffRoles).ThenInclude(p => p.role).Where(p => p.IDStaff == userId)
+                .Select(p => new { info = new { p.IDStaff,p.Email, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c => c.IsDelete == false).Select(p => p.role) }).FirstOrDefault();
+            return Ok(rs);
+        }
+        [HttpPut("ChangeInfo")]
+        [Authorize]
+        public IActionResult ChangeInfo()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
 

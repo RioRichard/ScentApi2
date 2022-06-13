@@ -79,6 +79,7 @@ namespace ScentApi2.Controllers
                 .Include(p => p.Carts).ThenInclude(p => p.ProductCarts).ThenInclude(p => p.Product)
                 .Include(p => p.Address)
                 .Include(p => p.Statused)
+                .OrderBy(p=>p.DateCreated)
                 .Where(p=>p.Carts.IDAccount == userId)
                 .Select(p => new { id = p.IDInvoice, Product = p.Carts.ProductCarts.Select(x => new { x.Product, x.Quantity }), p.Address, p.Statused });
             //Console.WriteLine(Account.Carts.FirstOrDefault(p=>p.IsExpired==false).IDCart);
@@ -91,6 +92,8 @@ namespace ScentApi2.Controllers
                 .Include(p => p.Carts).ThenInclude(p => p.ProductCarts).ThenInclude(p => p.Product)
                 .Include(p => p.Address)
                 .Include(p => p.Statused)
+                .OrderBy(p => p.DateCreated)
+
                 .Select(p => new { id = p.IDInvoice, Product = p.Carts.ProductCarts.Select(x => new { x.Product, x.Quantity}), p.Address, p.Statused });
             return Ok(Invoice);
         }
@@ -100,7 +103,7 @@ namespace ScentApi2.Controllers
             var invoice = Context.Invoices
                 .Include(p => p.Carts).ThenInclude(p => p.Account)
                 .Include(p => p.Carts).ThenInclude(p => p.ProductCarts).ThenInclude(p => p.Product)
-
+                
                 .Where(p => p.DateCreated.Value.Month == input.Value.Month && p.DateCreated.Value.Year == input.Value.Year)
                 .Select(p => new { p.Carts.Account, productCart = p.Carts.ProductCarts.Select(x => new { x.Quantity, x.Product }) });
             return Ok(invoice);
