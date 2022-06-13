@@ -22,10 +22,10 @@ namespace ScentApi2.Model
         public bool? IsDelete { get; set; }
         public string FullName { get; set; }
         public bool? Gender { get; set; }
-        //[JsonIgnore]
+        [JsonIgnore]
         public List<AccountAddress> AccountAddresses { get; set; }
 
-        //[JsonIgnore]
+        [JsonIgnore]
         public List<Cart> Carts{ get; set; }
     }
 }

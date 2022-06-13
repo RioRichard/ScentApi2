@@ -105,15 +105,24 @@ namespace ScentApi2.Controllers
         {
             try
             {
-                var cate = Context.Categories.FirstOrDefault(p => p.IdCategory == id);
+                var cate = Context.Categories.Include(p=>p.Products)
+                    .ThenInclude(p=>p.ProductCarts)
+                    .ThenInclude(p=>p.Cart)
+                    
+                    .FirstOrDefault(p => p.IdCategory == id);
+                if (cate.Products.FirstOrDefault(p => p.ProductCarts.FirstOrDefault(c => c.Cart.IsExpired == true) == null) == null)
+                {
+                    Context.Categories.Remove(cate);
+                    Context.SaveChanges();
+                    return Ok();
 
-                Context.Categories.Remove(cate);
-                Context.SaveChanges();
-                return Ok();
+                }
+                return BadRequest("Không thể xóa. Sản phẩm đã được mua");
+
             }
-            catch
+            catch (Exception ex)
             {
-                return BadRequest();
+                return BadRequest(ex);
 
             }
 

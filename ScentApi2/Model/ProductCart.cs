@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ScentApi2.Model
 {
@@ -13,8 +14,10 @@ namespace ScentApi2.Model
         public int IDProduct { get; set; }
         public int Quantity { get; set; }
         public int PaymentPrice { get; set; }
-
+        [JsonIgnore]
         public Cart Cart { get; set; }
+        [JsonIgnore]
+
         public Product Product { get; set; }
     }
 }

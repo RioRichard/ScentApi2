@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ScentApi2.Model
 {
@@ -12,6 +13,7 @@ namespace ScentApi2.Model
         public Guid IdRole { get; set; }
         public string RoleName { get; set; }
         public bool? IsDelete { get; set; }
+        [JsonIgnore]
 
         public List<StaffRole> staffRoles { get; set; }
     }

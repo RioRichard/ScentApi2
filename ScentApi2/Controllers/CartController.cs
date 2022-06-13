@@ -25,11 +25,11 @@ namespace ScentApi2.Controllers
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
             var rs = Context.Carts.Include(p => p.ProductCarts).ThenInclude(p => p.Product).Where(p => p.IDAccount == userId && p.IsExpired == false)
-                .Select(p =>new {Product = p.ProductCarts.Select(x => new { x.Product,x.Quantity }), }).FirstOrDefault();
+                .Select(p => new { Product = p.ProductCarts.Select(x => new { x.Product, x.Quantity }), }).FirstOrDefault();
             return Ok(rs);
         }
 
-        
+
         [HttpPost]
         [Authorize]
         public IActionResult AddToCart([FromBody] AddCartModel product)
@@ -38,7 +38,23 @@ namespace ScentApi2.Controllers
             cartRepo.AddToCart(product, userId);
             return Ok();
         }
+        [HttpPut("{guidCart}")]
+        [Authorize]
+        public IActionResult UpdateCart(string guidCart,[FromBody] AddCartModel product)
+        {
+            try
+            {
+                cartRepo.UpdateCart(guidCart, product.idProduct, product.Quantity);
+                return Ok();
+            }
+            catch (System.Exception ex)
+            {
 
-        
+                return BadRequest(ex);
+            }
+            
+        }
+
+
     }
 }

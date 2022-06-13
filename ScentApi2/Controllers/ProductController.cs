@@ -138,5 +138,31 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpDelete("Delete")]
+        public IActionResult Update([FromBody]int id)
+        {
+
+            try
+            {
+                var product = Context.Products
+                    .Include(p=>p.ProductCarts)
+                    .ThenInclude(p=>p.Cart)
+                    .FirstOrDefault(p=>p.IdProduct==id);
+                if(product.ProductCarts.FirstOrDefault(p=>p.Cart.IsExpired == true) == null)
+                {
+                    Context.Products.Remove(product);
+                    Context.SaveChanges();
+                    return Ok();
+                }
+                return BadRequest("Không thể xóa. Đã có khách hàng mua mặt hàng này");
+                
+                //return Ok(imageUrl);
+            }
+            catch (System.Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
     }
 }

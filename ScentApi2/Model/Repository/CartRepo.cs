@@ -52,5 +52,17 @@ namespace ScentApi2.Model.Repository
             Context.SaveChanges();
 
         }
+        public void UpdateCart(string guidCart, int idProduct, int quantity)
+        {
+            var cart = Context.ProductCarts.FirstOrDefault(p=>p.IDProduct == idProduct && p.IDCart == Guid.Parse(guidCart));
+            if(quantity == 0)
+                Context.ProductCarts.Remove(cart);
+            else
+            {
+                cart.Quantity = quantity;
+                Context.ProductCarts.Update(cart);
+            }
+            Context.SaveChanges();
+        }
     }
 }

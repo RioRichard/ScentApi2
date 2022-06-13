@@ -11,7 +11,7 @@ using Microsoft.OpenApi.Models;
 using ScentApi2.Model;
 using System;
 using System.Text;
-
+using System.Text.Json.Serialization;
 
 namespace ScentApi2
 {
@@ -74,6 +74,7 @@ namespace ScentApi2
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "ScentApi2", Version = "v1" });
             });
             services.AddDbContext<DataContext>(p => p.UseSqlServer(Configuration.GetConnectionString("Data")));
+                
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

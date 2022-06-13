@@ -15,7 +15,11 @@ namespace ScentApi2.Model
 
         [JsonIgnore]
         public Account Account { get; set; }
+        [JsonIgnore]
+
         public System.Collections.Generic.List<ProductCart> ProductCarts { get; set; }
+        [JsonIgnore]
+
         public Invoice Invoices { get; set; }
     }
 }

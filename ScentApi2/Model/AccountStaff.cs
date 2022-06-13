@@ -20,6 +20,7 @@ namespace ScentApi2.Model
         public bool? IsDelete { get; set; }
         public string FullName { get; set; }
         public bool? Gender { get; set; }
+        [JsonIgnore]
 
         public List<StaffRole> StaffRoles { get; set; }
 
