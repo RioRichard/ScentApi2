@@ -200,5 +200,76 @@ namespace ScentApi2.Controllers
             }
         }
 
+        [HttpPut("ChangePass")]
+        [Authorize]
+        public IActionResult ChangePass([FromBody] ChangePassword pass)
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                var acc = Context.Accounts.FirstOrDefault(p => p.Password.SequenceEqual(Helper.Hash(pass.OldPass + userId)) && p.IdAccount == userId);
+                if(acc == null)
+                {
+                    return Ok(new
+                    {
+                        status = false,
+                        msg = "Sai mật khẩu cũ"
+                    });
+
+                }
+                else
+                {
+                    acc.Password = Helper.Hash(pass.NewPass + userId);
+                    Context.Accounts.Update(acc);
+                    Context.SaveChanges();
+                    return Ok(new
+                    {
+                        status = true,
+                        msg = "Đổi mật khẩu thành công"
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+        [HttpPut("ChangeStaffPass")]
+        [Authorize]
+        public IActionResult ChangeStaffPass([FromBody] ChangePassword pass)
+        {
+            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            try
+            {
+                var acc = Context.AccountStaffs.FirstOrDefault(p => p.Password.SequenceEqual(Helper.Hash(pass.OldPass + userId)) && p.IDStaff == userId);
+                if (acc == null)
+                {
+                    return Ok(new
+                    {
+                        status = false,
+                        msg = "Sai mật khẩu cũ"
+                    });
+
+                }
+                else
+                {
+                    acc.Password = Helper.Hash(pass.NewPass + userId);
+                    Context.AccountStaffs.Update(acc);
+                    Context.SaveChanges();
+                    return Ok(new
+                    {
+                        status = true,
+                        msg = "Đổi mật khẩu thành công"
+                    });
+                }
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+
     }
 }
