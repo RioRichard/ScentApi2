@@ -30,7 +30,7 @@ namespace ScentApi2.Controllers
         {
             try
             {
-                var rs = AccountRepo.AddAccount(signUp.Email, signUp.UserName, signUp.Pass);
+                var rs = AccountRepo.AddAccount(signUp);
                 
                 return Ok(rs);
 
@@ -45,7 +45,7 @@ namespace ScentApi2.Controllers
         [HttpPost]
         [Route("Login")]
         public IActionResult Login([FromBody]LogInModel login){
-            var rs = AccountRepo.Validate(login.UserName, login.Pass);
+            var rs = AccountRepo.Validate(login);
             return Ok(rs);
         }
         [HttpGet("Info")]
@@ -64,14 +64,13 @@ namespace ScentApi2.Controllers
 
             return Ok(x);
         }
-        [HttpPost("Confirm")]
-        [Authorize]
-        public IActionResult Confirm([FromBody] string token)
+        [HttpPost("Confirm/{token}")]
+        public IActionResult Confirm(string token, [FromBody] string UrlFrontEnd)
         {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
+            
             try
             {
-                return Ok(AccountRepo.tryConfirm(userId, token));
+                return Ok(AccountRepo.tryConfirm(token, UrlFrontEnd));
             }
             catch (Exception e)
             {
@@ -79,21 +78,7 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
-        [HttpPost("SendMail")]
-        [Authorize]
-        public IActionResult SendMail()
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            try
-            {
-                return Ok(AccountRepo.sendToken(userId));
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
+        
         [HttpPut("UpdateInfo")]
         [Authorize]
         public IActionResult UpdateInfo([FromBody] InfoModel info)
@@ -119,7 +104,7 @@ namespace ScentApi2.Controllers
         {
             try
             {
-                var rs = AccountRepo.ValidateAdmin(logIn.UserName, logIn.Pass);
+                var rs = AccountRepo.ValidateAdmin(logIn);
                 return Ok(rs);
             }
             catch (Exception ex)
@@ -133,18 +118,8 @@ namespace ScentApi2.Controllers
         {
             try
             {
-                var id = Helper.RandomString(64);
-                var acc = new AccountStaff()
-                {
-                    IDStaff = id,
-                    UserName = signUp.UserName,
-                    Password = Helper.Hash(signUp.Pass + id),
-                    Email = signUp.Email
-                };
-                Context.AccountStaffs.Add(acc);
-                Context.SaveChanges();
-                //var acc = Context.AccountStaffs;
-                return Ok(acc);
+                var rs = AccountRepo.AddAdminAccount(signUp);
+                return Ok(rs);
             }
             catch (Exception ex)
             {
@@ -203,6 +178,20 @@ namespace ScentApi2.Controllers
                 Context.AccountStaffs.Update(acc);
                 Context.SaveChanges();
                 return Ok("Sửa thông tin thành công.");
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+        [HttpPost("ConfirmAdmin/{token}")]
+        public IActionResult ConfirmAdmin(string token, [FromBody] string UrlFrontEnd)
+        {
+
+            try
+            {
+                return Ok(AccountRepo.tryConfirmAdmin(token, UrlFrontEnd));
             }
             catch (Exception e)
             {
