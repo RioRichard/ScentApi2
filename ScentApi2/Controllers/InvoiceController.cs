@@ -115,17 +115,24 @@ namespace ScentApi2.Controllers
             var invoice = Context.Invoices.Where(p => p.DateExpired.Value.Month == input.Value.Month && p.DateExpired.Value.Year == input.Value.Year);
             return Ok(invoice);
         }
-        //[NonAction]
-        //public int CompareMonth(DateTime? day1, DateTime? day2)
-        //{
-        //    day1 = day1 ?? DateTime.MaxValue;
-        //    day2 = day2 ?? DateTime.MaxValue;
-        //    day1 = (DateTime)day1;
-        //    day2 = (DateTime)day2;
-        //    return DateTime.Compare(day1.Value.Month)
+        [HttpPut("{id}")]
+        public IActionResult ChangeInvoiceStatus(Guid id, [FromBody] int idStatus)
+        {
+            try
+            {
+                var Invoice = Context.Invoices.FirstOrDefault(p => p.IDInvoice == id);
+                Invoice.IDStatus = idStatus;
+                Context.Invoices.Update(Invoice);
+                Context.SaveChanges();
+                return Ok("Đổi tình trạng đơn hàng thành công");
 
+            }
+            catch (Exception e)
+            {
 
-        //}
+                return BadRequest(e);
+            }
+        }
 
     }
 }
