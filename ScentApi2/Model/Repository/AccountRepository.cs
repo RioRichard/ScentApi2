@@ -291,8 +291,18 @@ namespace ScentApi2.Model.Repository
         {
             var check = Context.AccountStaffs.FirstOrDefault(p => p.Email == signUp.Email || p.UserName == signUp.UserName);
             if (check == null)
+                
             {
+                var role = Context.Roles.FirstOrDefault(p => p.RoleName == "Staff");
                 var id = Helper.RandomString(64);
+                var staffRole = new StaffRole()
+                {
+                    IdRole = role.IdRole,
+                    IDStaff = id,
+                    IsDelete = false
+
+                };
+                
                 var pass = Helper.RandomString(7);
                 var newAccount = new AccountStaff()
                 {
@@ -302,10 +312,13 @@ namespace ScentApi2.Model.Repository
                     Password = Helper.Hash(pass + id),
                     Token = Helper.RandomString(64),
                     IsConfirmed = false,
-                    ExpiredTokenTime = DateTime.UtcNow.AddMinutes(15)
+                    ExpiredTokenTime = DateTime.UtcNow.AddMinutes(15),
+                    StaffRoles = new List<StaffRole>()
                 };
+                newAccount.StaffRoles.Add(staffRole);
                 Context.AccountStaffs.Add(newAccount);
                 Context.SaveChanges();
+                
                 var content = $"Đường dẫn xác nhận tài khoản nhân viên của bạn là: {signUp.UrlFrontEnd + newAccount.Token} với mật khẩu là {pass} có thời gian hiệu lực trong 15p.";
                 var subject = $"Xác nhận tài khoản nhân viên Teyvat Scent";
                 Helper.SendMail(signUp.Email, content, subject);
