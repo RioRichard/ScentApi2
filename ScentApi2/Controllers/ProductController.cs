@@ -164,5 +164,23 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPost("UploadFELogo")]
+        
+        public IActionResult Upload([FromForm] FileModel file)
+        {
+            try
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "FELogo");
+
+                var imageUrl = Helper.FileUpload(file.File, path, file.FileName);
+
+                return Ok(new { imageUrl = imageUrl });
+            }
+            catch (System.Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
     }
 }

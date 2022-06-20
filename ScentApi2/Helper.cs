@@ -71,13 +71,13 @@ namespace ScentApi2
             message.Subject = subject;
             client.Send(message);
         }
-        public static  string FileUpload(IFormFile f, string savePath)
+        public static  string FileUpload(IFormFile f, string savePath, string fileName = "")
         {
             if (f != null && !string.IsNullOrEmpty(f.FileName))
             {
                 
-                
-                var fileName = Helper.RandomString(32);
+                if(String.IsNullOrEmpty(fileName))
+                    fileName = Helper.RandomString(32);
                 var imageUrl = fileName + Path.GetExtension(f.FileName);
 
                 string path = Path.Combine(savePath, imageUrl);
