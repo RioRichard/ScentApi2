@@ -270,6 +270,39 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPut("ChangeRole/{idStaff}")]
+        public IActionResult ChangeRole(string idStaff, [FromBody]ChangeRoleModel changeRoleModel)
+        {
+            try
+            {
+                var staffRole = Context.StaffRoles.FirstOrDefault(p => p.IdRole == changeRoleModel.RoleId && p.IDStaff == idStaff);
+                if (staffRole == null)
+                {
+                    staffRole = new StaffRole()
+                    {
+                        IDStaff = idStaff,
+                        IdRole = changeRoleModel.RoleId,
+                        IsDelete = changeRoleModel.IsDelete
+                    };
+                    Context.StaffRoles.Add(staffRole);
+
+                }
+                else
+                {
+                    staffRole.IsDelete = changeRoleModel.IsDelete;
+                    Context.StaffRoles.Update(staffRole);
+                }
+                    
+                Context.SaveChanges();
+                return Ok("Đổi role thành công");
+
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
 
     }
 }
