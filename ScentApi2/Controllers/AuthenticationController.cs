@@ -303,6 +303,50 @@ namespace ScentApi2.Controllers
                 return BadRequest(e);
             }
         }
+        [HttpPost("SignInGoogle")]
+        public IActionResult SignInGoogle([FromBody] SignUpModel logIn)
+        {
+            try
+            {
+                var rs = AccountRepo.ValidateGoogle(logIn);
+                return Ok(rs);
+            }
+            catch (Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+        [HttpPost("ForgotPassword")]
+        public IActionResult ForgotPassword([FromBody] string email)
+        {
+            try
+            {
+                var rs = AccountRepo.ForgotPassword(email);
+                return Ok(rs);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+            
+        }
+        [HttpPost("ForgotAdminPassword")]
+        public IActionResult ForgotAdminPassword([FromBody] string email)
+        {
+            try
+            {
+                var rs = AccountRepo.ForgotAdminPassword(email);
+                return Ok(rs);
+            }
+            catch (Exception ex)
+            {
+
+                return BadRequest(ex);
+            }
+
+        }
 
     }
 }

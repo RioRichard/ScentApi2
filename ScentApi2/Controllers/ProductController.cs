@@ -173,7 +173,7 @@ namespace ScentApi2.Controllers
             {
                 var srcpath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ImageTemp", FileName);
                 var despath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "FELogo", FileName);
-                var oldDesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "Image", FileName);
+                var oldDesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "FELogo", FileName);
                 if(System.IO.File.Exists(oldDesPath))
                     System.IO.File.Delete(oldDesPath);
                 if (System.IO.File.Exists(srcpath))
