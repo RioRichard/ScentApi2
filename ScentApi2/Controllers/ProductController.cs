@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
@@ -38,7 +39,9 @@ namespace ScentApi2.Controllers
             return NotFound();
         }
         [HttpPost("AddProduct")]
-       
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
+
         public IActionResult AddProduct([FromBody] ProductModel product)
         {
             try
@@ -81,14 +84,17 @@ namespace ScentApi2.Controllers
             return Ok(Context.Products.Where(p=>p.Name.ToLower().Contains(name.ToLower())));
         }
         [HttpPost("Upload")]
-        public IActionResult Upload(IFormFile file)
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
+        public IActionResult Upload([FromForm] FileModel file)
         {
             try
             {
                 var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ImageTemp");
-
-                var imageUrl = Helper.FileUpload(file, path);
                 
+                var imageUrl = Helper.FileUpload(file.File, path, file.FileName);
+
+
                 return Ok(new {imageUrl = imageUrl});
             }
             catch (System.Exception e)
@@ -98,6 +104,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult Update(int id, [FromBody] ProductModel productModel)
         {
 
@@ -139,6 +147,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpDelete("Delete")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult Update([FromBody]int id)
         {
 
@@ -157,6 +167,38 @@ namespace ScentApi2.Controllers
                 return BadRequest("Không thể xóa. Đã có khách hàng mua mặt hàng này");
                 
                 //return Ok(imageUrl);
+            }
+            catch (System.Exception e)
+            {
+
+                return BadRequest(e);
+            }
+        }
+        [HttpPost("UploadFELogo")]
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
+
+        public IActionResult Upload([FromBody] string FileName)
+        {
+            try
+            {
+                var srcpath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "ImageTemp", FileName);
+                var despath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "FELogo", FileName);
+                var oldDesPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "FELogo", FileName);
+                if(System.IO.File.Exists(oldDesPath))
+                    System.IO.File.Delete(oldDesPath);
+                if (System.IO.File.Exists(srcpath))
+                {
+                    System.IO.File.Copy(srcpath, despath);
+                    System.IO.File.Delete(srcpath);
+                }
+
+                
+                //System.IO.File.Move(despath, srcpath);
+                
+                
+
+                return Ok();
             }
             catch (System.Exception e)
             {

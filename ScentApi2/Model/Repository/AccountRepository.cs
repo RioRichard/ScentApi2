@@ -260,7 +260,8 @@ namespace ScentApi2.Model.Repository
                             Success = false,
                             Msg = "Tài khoản của bạn chưa được xác nhận. Một email mới đã được gửi tới yêu cầu xác nhận và có hiệu lực trong 15p",
                             Data = "",
-                            IsConfirm = false
+                            IsConfirm = false,
+                            
 
                         };
                     }
@@ -269,7 +270,8 @@ namespace ScentApi2.Model.Repository
                         Success = true,
                         Msg = "Đăng nhập thành công",
                         Data = generateJWTToken(result),
-                        IsConfirm = result.IsConfirmed
+                        IsConfirm = result.IsConfirmed,
+                        IsDelete = result.IsDelete
 
                     };
                 }
@@ -386,6 +388,94 @@ namespace ScentApi2.Model.Repository
             {
                 status = false,
                 msg = "Xác nhận không thành công. Sai đường dẫn."
+            };
+        }
+        public object ValidateGoogle(SignUpModel logIn)
+        {
+            var result = Context.Accounts.FirstOrDefault(p => p.Email == logIn.Email);
+
+            if (result == null)
+            {
+                var id = Helper.RandomString(64);
+                result = new Account()
+                {
+                    Email = logIn.Email,
+                    UserName = logIn.UserName,
+                    Password = Helper.Hash(Helper.RandomString(64)),
+                    IsConfirmed = true,
+                    IsDelete = false
+                    
+                };
+                Context.Accounts.Add(result);
+                Context.SaveChanges();
+                
+                
+
+            }
+
+            return new
+            {
+                Success = true,
+                Msg = "Đăng nhập thành công",
+                Data = generateJWTToken(result),
+                IsConfirm = result.IsConfirmed
+
+
+            };
+            
+        }
+        public object ForgotPassword(string emai)
+        {
+            var acc = Context.Accounts.FirstOrDefault(p => p.Email == emai);
+            if(acc == null)
+            {
+                return new
+                {
+                    Success = false,
+                    Msg = "Không có tài khoản của bạn.",
+
+                };
+            }
+            var randomPass = Helper.RandomString(7);
+            var newPass = Helper.Hash(randomPass+ acc.IdAccount );
+            acc.Password = newPass;
+            Context.Accounts.Update(acc);
+            Context.SaveChanges();
+            var content = $"Mật khẩu mới của bạn là: {randomPass} có thời gian hiệu lực trong 15p.";
+            var subject = $"Xác nhận tài khoản nhân viên Teyvat Scent";
+            Helper.SendMail(acc.Email, content, subject);
+            return new
+            {
+                Success = true,
+                Msg = "Đã gửi tin nhắn kèm mật khẩu mới của bạn.",
+
+            };
+        }
+        public object ForgotAdminPassword(string emai)
+        {
+            var acc = Context.AccountStaffs.FirstOrDefault(p => p.Email == emai);
+            if (acc == null)
+            {
+                return new
+                {
+                    Success = false,
+                    Msg = "Không có tài khoản của bạn.",
+
+                };
+            }
+            var randomPass = Helper.RandomString(7);
+            var newPass = Helper.Hash(randomPass + acc.IDStaff);
+            acc.Password = newPass;
+            Context.AccountStaffs.Update(acc);
+            Context.SaveChanges();
+            var content = $"Mật khẩu mới cho tài khoản nhân viên của bạn là: {randomPass} có thời gian hiệu lực trong 15p.";
+            var subject = $"Xác nhận tài khoản nhân viên Teyvat Scent";
+            Helper.SendMail(acc.Email, content, subject);
+            return new
+            {
+                Success = true,
+                Msg = "Đã gửi tin nhắn kèm mật khẩu mới của bạn.",
+
             };
         }
 
