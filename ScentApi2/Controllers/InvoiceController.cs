@@ -23,7 +23,8 @@ namespace ScentApi2.Controllers
             return Ok(Context.Statuses.ToList());
         }
 
-        [Authorize]
+        [Authorize(Roles = "None")]
+
         [HttpPost]
         public IActionResult Charge()
         {
@@ -68,7 +69,8 @@ namespace ScentApi2.Controllers
             return Ok(Account.Carts.FirstOrDefault(p => p.IsExpired == false).ProductCarts.Count);
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "None")]
+
         public IActionResult GetAllInvoice()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -86,6 +88,8 @@ namespace ScentApi2.Controllers
             return Ok(AllInvoice);
         }
         [HttpGet]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult GetAdminInvoice()
         {
             var Invoice = Context.Invoices
@@ -98,6 +102,8 @@ namespace ScentApi2.Controllers
             return Ok(Invoice);
         }
         [HttpPost]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult GetInvoiceStartMonth([FromBody] DateTime? input)
         {
             var invoice = Context.Invoices
@@ -110,12 +116,16 @@ namespace ScentApi2.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult GetInvoiceExpiredMonth([FromBody] DateTime? input)
         {
             var invoice = Context.Invoices.Where(p => p.DateExpired.Value.Month == input.Value.Month && p.DateExpired.Value.Year == input.Value.Year);
             return Ok(invoice);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult ChangeInvoiceStatus(Guid id, [FromBody] int idStatus)
         {
             try

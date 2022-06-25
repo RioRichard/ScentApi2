@@ -11,6 +11,7 @@ namespace ScentApi2.Controllers
 {
     [Route("api/[Controller]/[Action]")]
     [ApiController]
+    [Authorize(Roles = "None")]
     public class CartController : BaseController
     {
         CartRepo cartRepo;
@@ -20,7 +21,7 @@ namespace ScentApi2.Controllers
         }
 
         [HttpGet]
-        [Authorize]
+        
         public IActionResult GetCart()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -31,7 +32,7 @@ namespace ScentApi2.Controllers
 
 
         [HttpPost]
-        [Authorize]
+        
         public IActionResult AddToCart([FromBody] AddCartModel product)
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -39,7 +40,7 @@ namespace ScentApi2.Controllers
             return Ok();
         }
         [HttpPut("{guidCart}")]
-        [Authorize]
+        
         public IActionResult UpdateCart(string guidCart,[FromBody] AddCartModel product)
         {
             try

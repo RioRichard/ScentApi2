@@ -63,6 +63,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPost("AddCate")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult AddCategory([FromBody] string Name)
         {
             try
@@ -83,6 +85,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPut("UpdateCate/{id}")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult UpdateCate(int id, [FromBody] CategoryModel category)
         {
             try
@@ -101,6 +105,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpDelete("DeleteCate")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult DeleteCate([FromBody]int id)
         {
             try
@@ -127,11 +133,6 @@ namespace ScentApi2.Controllers
             }
 
         }
-        [HttpGet("TestAuthorize")]
-        [Authorize]
-        public IActionResult Test()
-        {
-            return Ok(GetCategory());
-        }
+        
     }
 }

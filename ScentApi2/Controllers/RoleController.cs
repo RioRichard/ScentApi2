@@ -14,6 +14,7 @@ namespace ScentApi2.Controllers
         }
 
         [HttpGet]
+
         public IActionResult GetRole()
         {
             try
