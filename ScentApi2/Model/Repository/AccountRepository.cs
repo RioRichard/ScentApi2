@@ -260,7 +260,8 @@ namespace ScentApi2.Model.Repository
                             Success = false,
                             Msg = "Tài khoản của bạn chưa được xác nhận. Một email mới đã được gửi tới yêu cầu xác nhận và có hiệu lực trong 15p",
                             Data = "",
-                            IsConfirm = false
+                            IsConfirm = false,
+                            
 
                         };
                     }
@@ -269,7 +270,8 @@ namespace ScentApi2.Model.Repository
                         Success = true,
                         Msg = "Đăng nhập thành công",
                         Data = generateJWTToken(result),
-                        IsConfirm = result.IsConfirmed
+                        IsConfirm = result.IsConfirmed,
+                        IsDelete = result.IsDelete
 
                     };
                 }
