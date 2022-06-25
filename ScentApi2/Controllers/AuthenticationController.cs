@@ -48,22 +48,8 @@ namespace ScentApi2.Controllers
             var rs = AccountRepo.Validate(login);
             return Ok(rs);
         }
-        [HttpGet("Info")]
-        [Authorize]
-        public IActionResult GetInfo()
-        {
-            var userId = User.Claims.FirstOrDefault(p=>p.Type == ClaimTypes.NameIdentifier).Value;
-            var acc = Context.Accounts.Where(p=>p.IdAccount == userId).Select(p=> new {email = p.Email, userName = p.UserName, gender = p.Gender, fullName = p.FullName, }).FirstOrDefault();
-            return Ok(acc);
-        }
-        [HttpGet("test")]
-        public IActionResult Test()
-        {
-
-            var x = Context.StaffRoles.Include(p => p.role);
-
-            return Ok(x);
-        }
+        
+        
         [HttpPost("Confirm/{token}")]
         public IActionResult Confirm(string token, [FromBody] string UrlFrontEnd)
         {
@@ -79,26 +65,7 @@ namespace ScentApi2.Controllers
             }
         }
         
-        [HttpPut("UpdateInfo")]
-        [Authorize]
-        public IActionResult UpdateInfo([FromBody] InfoModel info)
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            try
-            {
-                var acc = Context.Accounts.FirstOrDefault(p => p.IdAccount == userId);
-                acc.FullName = info.Fullname;
-                acc.Gender = info.Gender;
-                Context.Accounts.Update(acc);
-                Context.SaveChanges();
-                return Ok("Sửa thông tin thành công.");
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
+        
         [HttpPost("AdminLogin")]
         public IActionResult AdminLogin([FromBody] LogInModel logIn)
         {
@@ -127,64 +94,7 @@ namespace ScentApi2.Controllers
                 return BadRequest(ex);
             }
         }
-        [HttpGet("AllStaffInfo")]
-        public IActionResult AllStaffInfo()
-        {
-            var rs = Context.AccountStaffs.Include(p => p.StaffRoles).ThenInclude(p => p.role)
-                .Select(p => new { info = new { p.IDStaff, p.Email, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c=>c.IsDelete == false).Select(p => p.role) });
-            return Ok(rs);
-        }
-
-        [HttpGet("GetAdminInfo")]
-        [Authorize]
-        public IActionResult GetAdminInfo()
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-
-            var rs = Context.AccountStaffs.Include(p => p.StaffRoles).ThenInclude(p => p.role).Where(p => p.IDStaff == userId)
-                .Select(p => new { info = new { p.IDStaff,p.Email, p.IsConfirmed, p.Gender, p.UserName, p.FullName, p.IsDelete }, Role = p.StaffRoles.Where(c => c.IsDelete == false).Select(p => p.role) }).FirstOrDefault();
-            return Ok(rs);
-        }
-        [HttpPut("ChangeAdminInfo")]
-        [Authorize]
-        public IActionResult ChangeInfo([FromBody] InfoModel info)
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            try
-            {
-                var acc = Context.AccountStaffs.FirstOrDefault(p => p.IDStaff == userId);
-                acc.FullName = info.Fullname;
-                acc.Gender = info.Gender;
-                Context.AccountStaffs.Update(acc);
-                Context.SaveChanges();
-                return Ok("Sửa thông tin thành công.");
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
-        [HttpPut("ChangeMemberInfo/{id}")]
-        public IActionResult ChangeMemberInfo(string id,[FromBody] InfoModel info)
-        {
-            
-            try
-            {
-                var acc = Context.AccountStaffs.FirstOrDefault(p => p.IDStaff == id);
-                acc.FullName = info.Fullname;
-                acc.Gender = info.Gender;
-                acc.IsDelete = info.IsDelete;
-                Context.AccountStaffs.Update(acc);
-                Context.SaveChanges();
-                return Ok("Sửa thông tin thành công.");
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
+       
         [HttpPost("ConfirmAdmin/{token}")]
         public IActionResult ConfirmAdmin(string token, [FromBody] string UrlFrontEnd)
         {
@@ -200,109 +110,7 @@ namespace ScentApi2.Controllers
             }
         }
 
-        [HttpPut("ChangePass")]
-        [Authorize]
-        public IActionResult ChangePass([FromBody] ChangePassword pass)
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            try
-            {
-                var acc = Context.Accounts.FirstOrDefault(p => p.Password.SequenceEqual(Helper.Hash(pass.OldPass + userId)) && p.IdAccount == userId);
-                if(acc == null)
-                {
-                    return Ok(new
-                    {
-                        status = false,
-                        msg = "Sai mật khẩu cũ"
-                    });
-
-                }
-                else
-                {
-                    acc.Password = Helper.Hash(pass.NewPass + userId);
-                    Context.Accounts.Update(acc);
-                    Context.SaveChanges();
-                    return Ok(new
-                    {
-                        status = true,
-                        msg = "Đổi mật khẩu thành công"
-                    });
-                }
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
-        [HttpPut("ChangeStaffPass")]
-        [Authorize]
-        public IActionResult ChangeStaffPass([FromBody] ChangePassword pass)
-        {
-            var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
-            try
-            {
-                var acc = Context.AccountStaffs.FirstOrDefault(p => p.Password.SequenceEqual(Helper.Hash(pass.OldPass + userId)) && p.IDStaff == userId);
-                if (acc == null)
-                {
-                    return Ok(new
-                    {
-                        status = false,
-                        msg = "Sai mật khẩu cũ"
-                    });
-
-                }
-                else
-                {
-                    acc.Password = Helper.Hash(pass.NewPass + userId);
-                    Context.AccountStaffs.Update(acc);
-                    Context.SaveChanges();
-                    return Ok(new
-                    {
-                        status = true,
-                        msg = "Đổi mật khẩu thành công"
-                    });
-                }
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
-        [HttpPut("ChangeRole/{idStaff}")]
-        public IActionResult ChangeRole(string idStaff, [FromBody]ChangeRoleModel changeRoleModel)
-        {
-            try
-            {
-                var staffRole = Context.StaffRoles.FirstOrDefault(p => p.IdRole == changeRoleModel.RoleId && p.IDStaff == idStaff);
-                if (staffRole == null)
-                {
-                    staffRole = new StaffRole()
-                    {
-                        IDStaff = idStaff,
-                        IdRole = changeRoleModel.RoleId,
-                        IsDelete = changeRoleModel.IsDelete
-                    };
-                    Context.StaffRoles.Add(staffRole);
-
-                }
-                else
-                {
-                    staffRole.IsDelete = changeRoleModel.IsDelete;
-                    Context.StaffRoles.Update(staffRole);
-                }
-                    
-                Context.SaveChanges();
-                return Ok("Đổi role thành công");
-
-            }
-            catch (Exception e)
-            {
-
-                return BadRequest(e);
-            }
-        }
+        
         [HttpPost("SignInGoogle")]
         public IActionResult SignInGoogle([FromBody] SignUpModel logIn)
         {
