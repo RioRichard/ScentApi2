@@ -56,7 +56,7 @@ namespace ScentApi2.Controllers
             return Ok();
         }
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles ="None")]
         public IActionResult GetAccountAddress()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;

@@ -13,6 +13,7 @@ namespace ScentApi2.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Roles = "Admin,Staff,SuperAdmin")]
     public class AdminController : BaseController
     {
         
@@ -23,6 +24,7 @@ namespace ScentApi2.Controllers
 
 
         [HttpGet("AllStaffInfo")]
+        [Authorize(Roles ="Admin, SuperAdmin")]
         public IActionResult AllStaffInfo()
         {
             try
@@ -34,12 +36,12 @@ namespace ScentApi2.Controllers
             catch (Exception ex)
             {
 
-                return BadRequest();
+                return BadRequest(ex);
             }
         }
 
         [HttpGet("GetAdminInfo")]
-        [Authorize]
+        
         public IActionResult GetAdminInfo()
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -49,7 +51,7 @@ namespace ScentApi2.Controllers
             return Ok(rs);
         }
         [HttpPut("ChangeAdminInfo")]
-        [Authorize]
+        
         public IActionResult ChangeInfo([FromBody] InfoModel info)
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -69,6 +71,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPut("ChangeMemberInfo/{id}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+
         public IActionResult ChangeMemberInfo(string id, [FromBody] InfoModel info)
         {
 
@@ -90,7 +94,7 @@ namespace ScentApi2.Controllers
         }
 
         [HttpPut("ChangeStaffPass")]
-        [Authorize]
+
         public IActionResult ChangeStaffPass([FromBody] ChangePassword pass)
         {
             var userId = User.Claims.FirstOrDefault(p => p.Type == ClaimTypes.NameIdentifier).Value;
@@ -125,6 +129,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPut("ChangeRole/{idStaff}")]
+        [Authorize(Roles = "Admin, SuperAdmin")]
+
         public IActionResult ChangeRole(string idStaff, [FromBody] ChangeRoleModel changeRoleModel)
         {
             try

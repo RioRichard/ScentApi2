@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ScentApi2.Model;
@@ -38,7 +39,9 @@ namespace ScentApi2.Controllers
             return NotFound();
         }
         [HttpPost("AddProduct")]
-       
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
+
         public IActionResult AddProduct([FromBody] ProductModel product)
         {
             try
@@ -81,6 +84,8 @@ namespace ScentApi2.Controllers
             return Ok(Context.Products.Where(p=>p.Name.ToLower().Contains(name.ToLower())));
         }
         [HttpPost("Upload")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult Upload([FromForm] FileModel file)
         {
             try
@@ -99,6 +104,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPut("Update/{id}")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult Update(int id, [FromBody] ProductModel productModel)
         {
 
@@ -140,6 +147,8 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpDelete("Delete")]
+        [Authorize(Roles = "Admin,Staff,SuperAdmin")]
+
         public IActionResult Update([FromBody]int id)
         {
 
@@ -166,7 +175,9 @@ namespace ScentApi2.Controllers
             }
         }
         [HttpPost("UploadFELogo")]
-        
+        [Authorize(Roles = "Admin,SuperAdmin")]
+
+
         public IActionResult Upload([FromBody] string FileName)
         {
             try
